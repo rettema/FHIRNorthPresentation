@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestScript xmlns="http://hl7.org/fhir">
+	<id value="basic-02-search-patient-prompt-json" />
+	<text>
+		<status value="generated"/>
+		<div xmlns="http://www.w3.org/1999/xhtml"><p>Basic Operations - 02 - Search - Patient Prompt - JSON</p></div>
+	</text>
+	<url value="https://touchstone.aegis.net/fhir4-0-0/TestScript/basic-02-search-patient-prompt-json" />
+	<name value="BasicOp01SearchPatientPromptJSON" />
+	<title value="Basic Operations - 02 - Search - Patient Prompt - JSON" />
+	<status value="active" />
+	<date value="2019-10-15" />
+	<publisher value="AEGIS.net, Inc." />
+	<contact>
+		<name value="Touchstone Support" />
+		<telecom>
+			<system value="email" />
+			<value value="Touchstone_Support@aegis.net" />
+			<use value="work" />
+		</telecom>
+	</contact>
+	<description value="FHIR R4 (v4.0.0) - Test Patient search only in JSON format prompting for the 'family' search parameter." />
+	<copyright value="(c) AEGIS.net, Inc. 2019" />
+	<profile id="bundle-profile">
+		<reference value="http://hl7.org/fhir/StructureDefinition/Bundle"/>
+	</profile>
+	<variable>
+		<name value="ValidFamilyName"/>
+		<description value="Enter a family name for valid Patient resources on the destination system."/>
+		<hint value="[Valid Family Name]"/>
+	</variable>
+	<test id="01-PatientSearchFamily">
+		<name value="01-PatientSearchFamily" />
+		<description value="Search for Patient resources in JSON format using the 'family' search parameter. The expected response code is 200 (OK) with a response payload containing a searchset Bundle resource with at least one matching Patient in JSON format." />
+		<action>
+			<operation>
+				<type>
+					<system value="http://hl7.org/fhir/testscript-operation-codes" />
+					<code value="search" />
+				</type>
+				<resource value="Patient" />
+				<description value="Search for Patients by family name." />
+				<accept value="json" />
+				<contentType value="none" />
+				<encodeRequestUrl value="true"/>
+				<params value="?family=${ValidFamilyName}" />
+			</operation>
+		</action>
+		<action>
+			<assert>
+				<description value="Confirm that the returned HTTP status is 200(OK)." />
+				<direction value="response" />
+				<response value="okay" />
+				<warningOnly value="false"/>
+			</assert>
+		</action>
+		<action>
+			<assert>
+				<description value="Confirm that the returned content format is JSON ('application/fhir+json')." />
+				<direction value="response" />
+				<contentType value="json" />
+				<warningOnly value="false"/>
+			</assert>
+		</action>
+		<action>
+			<assert>
+				<description value="Confirm that the response payload contains the Bundle resource type." />
+				<direction value="response" />
+				<resource value="Bundle" />
+				<warningOnly value="false"/>
+			</assert>
+		</action>
+		<action>
+			<assert>
+				<description value="Confirm that the returned Bundle conforms to the base FHIR specification."/>
+				<direction value="response"/>
+				<validateProfileId value="bundle-profile"/>
+				<warningOnly value="false"/>
+			</assert>
+		</action>
+		<action>
+			<assert>
+				<description value="Confirm that the returned Bundle.type is searchset."/>
+				<direction value="response"/>
+				<path value=".type"/>
+				<value value="searchset"/>
+				<warningOnly value="false"/>
+			</assert>
+		</action>
+		<action>
+			<assert>
+				<description value="Using FHIRPath against Bundle.entry, confirm that there is at least one record returned."/>
+				<direction value="response"/>
+				<expression value="Bundle.entry.count()"/>
+				<operator value="greaterThan"/>
+				<value value="0"/>
+				<warningOnly value="false"/>
+			</assert>
+		</action>
+	</test>
+</TestScript>
